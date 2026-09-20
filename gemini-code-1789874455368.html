@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ulasan Commission Art</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 500px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: relative;
+      display: none;
+    }
+
+    .card.active {
+      display: block;
+    }
+
+    /* Red Dot Button */
+    .red-dot {
+      width: 14px;
+      height: 14px;
+      background-color: #ff4d4d;
+      border-radius: 50%;
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s;
+    }
+
+    .red-dot:hover {
+      transform: scale(1.2);
+    }
+
+    h1, h2 {
+      margin-bottom: 20px;
+      color: #333;
+      text-align: center;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+      height: 100px;
+    }
+
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .star-rating input {
+      display: none;
+    }
+
+    .star-rating label {
+      font-size: 30px;
+      color: #ccc;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+      color: #ffca28;
+    }
+
+    .btn {
+      width: 100%;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #357abd;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      padding: 6px 12px;
+      font-size: 12px;
+      width: auto;
+      margin-top: 5px;
+    }
+
+    .btn-danger:hover {
+      background-color: #bd2130;
+    }
+
+    /* Review Card Styling */
+    .review-item {
+      border: 1px solid #e1e1e1;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      background-color: #fafafa;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .review-name {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .review-stars {
+      color: #ffca28;
+    }
+
+    .review-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    .error-msg {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Halaman 1 -->
+  <div id="page-1" class="card active">
+    <button class="red-dot" onclick="goToPage('page-A')" title="Halaman Rahasia"></button>
+    <h1>Selamat Datang!</h1>
+    <p>Terima kasih telah memesan commission art. Mohon luangkan waktu untuk memberikan ulasan Anda.</p>
+    <button class="btn" onclick="startReviewProcess()">Beri Ulasan</button>
+  </div>
+
+  <!-- Halaman A (Rahasia - Input Password) -->
+  <div id="page-A" class="card">
+    <h2>Akses Admin</h2>
+    <div class="form-group">
+      <label for="admin-pass">Masukkan Sandi Rahasia:</label>
+      <input type="password" id="admin-pass" placeholder="Ketik sandi...">
+    </div>
+    <p id="admin-error" class="error-msg"></p>
+    <button class="btn" onclick="verifyAdmin()">Submit</button>
+    <button class="btn btn-secondary" onclick="goToPage('page-1')">Kembali</button>
+  </div>
+
+  <!-- Halaman 2 -->
+  <div id="page-2" class="card">
+    <h2>Identitas</h2>
+    <div class="form-group">
+      <label for="reviewer-name">Nama (Kamu):</label>
+      <input type="text" id="reviewer-name" placeholder="Masukkan nama Anda">
+    </div>
+    <button class="btn" onclick="submitName()">Submit</button>
+  </div>
+
+  <!-- Halaman 3 -->
+  <div id="page-3" class="card">
+    <h2>Beri Ulasan</h2>
+    
+    <label>Beri Rating:</label>
+    <div class="star-rating">
+      <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+      <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+      <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+      <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+      <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+    </div>
+
+    <div class="form-group">
+      <label for="review-text">Ulasan atau Saran:</label>
+      <textarea id="review-text" placeholder="Tulis tanggapan atau saran Anda di sini..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="review-photo">Upload Foto Hasil Commission:</label>
+      <input type="file" id="review-photo" accept="image/*">
+    </div>
+
+    <button class="btn" onclick="submitReview()">Kirim Ulasan</button>
+  </div>
+
+  <!-- Halaman 4 -->
+  <div id="page-4" class="card">
+    <h1>Terima Kasih!</h1>
+    <p>Ulasan Anda sangat berharga untuk perkembangan karya saya ke depannya.</p>
+    <button class="btn" onclick="viewReviews(false)">Lihat Ulasan Lainnya</button>
+  </div>
+
+  <!-- Halaman 5 (Halaman B / Publik & Admin View) -->
+  <div id="page-5" class="card">
+    <h2>Semua Ulasan</h2>
+    <div id="reviews-container"></div>
+    <button class="btn btn-secondary" onclick="goToPage('page-1')">Kembali ke Halaman 1</button>
+  </div>
+
+  <script>
+    let tempName = "";
+    let isAdminMode = false;
+
+    // Navigasi Halaman
+    function goToPage(pageId) {
+      document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    // Cek Batas Waktu 1 Hari
+    function checkReviewLimit() {
+      const lastReviewTime = localStorage.getItem('lastReviewTimestamp');
+      if (lastReviewTime) {
+        const currentTime = new Date().getTime();
+        const oneDayInMs = 24 * 60 * 60 * 1000;
+        if (currentTime - parseInt(lastReviewTime) < oneDayInMs) {
+          const remainingHours = Math.ceil((oneDayInMs - (currentTime - parseInt(lastReviewTime))) / (1000 * 60 * 60));
+          alert(`Anda sudah memberikan ulasan. Silakan tunggu ${remainingHours} jam lagi untuk memberikan ulasan kembali.`);
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function startReviewProcess() {
+      if (checkReviewLimit()) {
+        goToPage('page-2');
+      }
+    }
+
+    // Verifikasi Admin (Halaman A ke Halaman 5/B)
+    function verifyAdmin() {
+      const pass = document.getElementById('admin-pass').value;
+      const errorMsg = document.getElementById('admin-error');
+      
+      if (pass === "shellastar613") {
+        errorMsg.innerText = "";
+        document.getElementById('admin-pass').value = "";
+        isAdminMode = true;
+        viewReviews(true);
+      } else {
+        errorMsg.innerText = "Sandi salah! Silakan coba lagi.";
+      }
+    }
+
+    // Submit Nama (Halaman 2 -> Halaman 3)
+    function submitName() {
+      const nameInput = document.getElementById('reviewer-name').value.trim();
+      if (!nameInput) {
+        alert("Silakan masukkan nama Anda terlebih dahulu.");
+        return;
+      }
+      tempName = nameInput;
+      goToPage('page-3');
+    }
+
+    // Submit Ulasan Lengkap (Halaman 3 -> Halaman 4)
+    function submitReview() {
+      const rating = document.querySelector('input[name="rating"]:checked');
+      const text = document.getElementById('review-text').value.trim();
+      const photoInput = document.getElementById('review-photo');
+
+      if (!rating) {
+        alert("Silakan pilih rating bintang.");
+        return;
+      }
+
+      if (!text) {
+        alert("Silakan isi kolom ulasan atau saran.");
+        return;
+      }
+
+      const saveAndNext = (imageData) => {
+        const newReview = {
+          id: Date.now(),
+          name: tempName,
+          rating: parseInt(rating.value),
+          text: text,
+          image: imageData || null
+        };
+
+        const existingReviews = JSON.parse(localStorage.getItem('commission_reviews') || '[]');
+        existingReviews.push(newReview);
+        localStorage.setItem('commission_reviews', JSON.stringify(existingReviews));
+
+        // Catat timestamp ulasan
+        localStorage.setItem('lastReviewTimestamp', newDate().getTime().toString());
+
+        // Reset Form
+        document.getElementById('reviewer-name').value = "";
+        document.getElementById('review-text').value = "";
+        document.getElementById('review-photo').value = "";
+        if (rating) rating.checked = false;
+
+        goToPage('page-4');
+      };
+
+      if (photoInput.files && photoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          saveAndNext(e.target.result);
+        };
+        reader.readAsDataURL(photoInput.files[0]);
+      } else {
+        saveAndNext(null);
+      }
+    }
+
+    // Menampilkan Ulasan (Halaman 5)
+    function viewReviews(adminAccess = false) {
+      if (!adminAccess) {
+        isAdminMode = false;
+      }
+
+      const container = document.getElementById('reviews-container');
+      const reviews = JSON.parse(localStorage.getItem('commission_reviews') || '[]');
+      container.innerHTML = "";
+
+      if (reviews.length === 0) {
+        container.innerHTML = "<p>Belum ada ulasan.</p>";
+      } else {
+        reviews.forEach(item => {
+          const stars = "★".repeat(item.rating) + "☆".repeat(5 - item.rating);
+          const reviewEl = document.createElement('div');
+          reviewEl.className = 'review-item';
+          
+          let html = `
+            <div class="review-header">
+              <span class="review-name">${escapeHtml(item.name)}</span>
+              <span class="review-stars">${stars}</span>
+            </div>
+            <p style="text-align: left; color: #333; margin-bottom: 5px;">${escapeHtml(item.text)}</p>
+          `;
+
+          if (item.image) {
+            html += `<img src="${item.image}" class="review-image" alt="Hasil Commission">`;
+          }
+
+          if (isAdminMode) {
+            html += `<br><button class="btn btn-danger" onclick="deleteReview(${item.id})">Hapus Ulasan</button>`;
+          }
+
+          reviewEl.innerHTML = html;
+          container.appendChild(reviewEl);
+        });
+      }
+
+      goToPage('page-5');
+    }
+
+    // Hapus Ulasan (Khusus Mode Admin)
+    function deleteReview(id) {
+      if (confirm("Apakah Anda yakin ingin menghapus ulasan ini?")) {
+        let reviews = JSON.parse(localStorage.getItem('commission_reviews') || '[]');
+        reviews = reviews.filter(item => item.id !== id);
+        localStorage.setItem('commission_reviews', JSON.stringify(reviews));
+        viewReviews(true);
+      }
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+  </script>
+</body>
+</html>
